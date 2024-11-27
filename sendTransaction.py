@@ -8,26 +8,20 @@ from solders.rpc.config import RpcSendTransactionConfig
 from solders.commitment_config import CommitmentLevel
 from telegram import Bot
 
-# Telegram bot ayarları
 TELEGRAM_BOT_TOKEN = "xxxx"
 TELEGRAM_CHAT_ID = "xxxx"
-bot = Bot(token=TELEGRAM_BOT_TOKEN)
 
-# Redis bağlantısı
+bot = Bot(token=TELEGRAM_BOT_TOKEN)
 redis_client = Redis(host="xxx", port=6379)
 
-# API URL'leri
 PUMPFUN_URL = "https://pumpportal.fun/api/trade-local"
 RPC_URL = "https://testnet.block-engine.jito.wtf/api/v1/transactions"
-
 
 async def send_telegram_message(mint):
     message = f"<b>💲🤑💰Transaction confirmed!</b>\n\n<b>Mint Address:</b> {mint}\n\nURL: https://pump.fun/{mint}"
     await bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message, parse_mode="HTML")
 
-# İşlem yapma fonksiyonu
 async def buy_token(mint):
-
     response = requests.post(url=PUMPFUN_URL, data={
         "publicKey": "xxxx", # Solana wallet PublicKey
         "action": "buy",
@@ -40,16 +34,11 @@ async def buy_token(mint):
     })
 
     if response.status_code == 200:
-
-        # İşlem imzalama süreci
-
         keypair = Keypair.from_base58_string("xxxxx")  # Wallet base58 kodu
         tx = VersionedTransaction(VersionedTransaction.from_bytes(response.content).message, [keypair])
-
         commitment = CommitmentLevel.Confirmed
         config = RpcSendTransactionConfig(preflight_commitment=commitment)
         
-        # İmzalı işlemi RPC endpoint'e gönder
         response = requests.post(
             url=RPC_URL,
             headers={"Content-Type": "application/json"},
