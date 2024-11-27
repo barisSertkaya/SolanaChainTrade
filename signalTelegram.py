@@ -100,11 +100,11 @@ async def remove_mint(mint):
     keys.discard(mint)
     if mint in mint_data:
         del mint_data[mint]
-    update_queue.put_nowait(True)  # WebSocket'e güncelleme gönder
+    update_queue.put_nowait(True)
 
 async def redis_subscriber():
     pubsub = redis_client.pubsub()
-    await pubsub.subscribe("in-mint-channel")  # in-mint-channel kanalına abone ol
+    await pubsub.subscribe("in-mint-channel")
 
     async for message in pubsub.listen():
         if message['type'] == 'message':
